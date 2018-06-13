@@ -1,0 +1,44 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:gs="http://namespaces.zope.org/genericsetup">
+
+    <five:registerPackage package="." initialize=".initialize" />
+    
+    <include package=".browser" />
+    
+    <utility
+        component=".vocabularies.ActivitiesVocabularyFactory"
+        name="istsida.vocabularies.activities"
+        />
+        
+    <utility
+        component=".vocabularies.PublicsVocabularyFactory"
+        name="istsida.vocabularies.publics"
+        />
+        
+    <utility
+        component=".vocabularies.RegionsVocabularyFactory"
+        name="istsida.vocabularies.regions"
+        />
+        
+    <utility
+        component=".vocabularies.PointsVocabularyFactory"
+        name="istsida.vocabularies.points"
+        />
+        
+    <utility
+        component=".vocabularies.TypesVocabularyFactory"
+        name="istsida.vocabularies.types"
+        />
+        
+    <gs:registerProfile
+        name="default"
+        title="IST-SIDA Site"
+        directory="profiles/default"
+        description="Extension profile for IST-SIDA Site."
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+        />
+
+</configure>

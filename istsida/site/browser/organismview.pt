@@ -1,0 +1,105 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<metal:main fill-slot="main"
+    tal:define="
+        plone_view context/@@plone;
+        site_view context/@@sc-site-view;
+        organism_activities python:site_view.organism_vocabulary('istsida.vocabularies.activities');
+        organism_regions python:site_view.organism_vocabulary('istsida.vocabularies.regions');
+        organism_publics python:site_view.organism_vocabulary('istsida.vocabularies.publics');
+        organism_points python:site_view.organism_vocabulary('istsida.vocabularies.points');
+        organism_types python:site_view.organism_vocabulary('istsida.vocabularies.types');">
+    
+    <tal:main-macro metal:define-macro="main"
+           tal:define="kssClassesView context/@@kss_field_decorator_view;
+                       getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
+
+        <div tal:replace="structure provider:plone.abovecontenttitle" />
+        <h1 class="documentFirstHeading"> 
+            <metal:field use-macro="python:here.widget('title', mode='view')">
+            Title
+            </metal:field>
+        </h1>
+
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
+        
+        <div style="float:left;padding:0 10px 10px 0;background-color:white;"
+             tal:condition="here/logo_mini|nothing">
+            <a tal:attributes="href string:$here_url/logo/image_view_fullscreen">
+               <img tal:attributes="src string:$here_url/logo_mini" alt="logo" />
+            </a>
+        </div>
+
+        <div tal:replace="structure provider:plone.abovecontentbody" />
+        <strong>Type : </strong>
+        <tal:type tal:repeat="tp python:context.getTypes()">
+                        <tal:if condition="not:repeat/tp/start">-</tal:if>
+                        <span tal:content="python:organism_types.get(tp,tp)">Type</span>
+        </tal:type><br />
+        <tal:if condition="context/getFocal">
+        <strong>Point focal :</strong>
+        <tal:region tal:repeat="focal python:context.getFocal()">
+                        <tal:if condition="not:repeat/focal/start">-</tal:if>
+                        <span tal:content="python:organism_points.get(focal,focal)">Point</span>
+        </tal:region><br />
+        </tal:if>
+        <strong>Public(s) ciblé(s) : </strong>
+        <tal:public tal:repeat="public python:context.getPublic()">
+                        <tal:if condition="not:repeat/public/start">-</tal:if>
+                        <span tal:content="python:organism_publics.get(public,public)">Public</span>
+        </tal:public><br />
+        <strong>Couverture géographique : </strong>
+        <tal:region tal:repeat="region python:context.getRegion()">
+                        <tal:if condition="not:repeat/region/start">-</tal:if>
+                        <span tal:content="python:organism_regions.get(region,region)">Region</span>
+        </tal:region><br />
+        <strong>Site Web : </strong><a tal:content="python:context.getUrl()" tal:attributes="href context/getUrl">URL</a><br />
+        <strong>Date de mise à jour : </strong>
+        <span tal:replace="python:plone_view.toLocalizedTime(context.getUpdateDate(),long_format=False)">Update Date</span><br />
+        
+        
+        <h2 style="clear: both;">Missions et objectifs</h2>
+        <metal:field use-macro="python:here.widget('mission', mode='view')">
+            Mission
+        </metal:field>
+        <h2>Activités</h2>
+        <ul>
+            <li tal:repeat="activity python:context.getActivity()">
+                <span tal:content="python:organism_activities.get(activity,activity)">Activity</span>
+            </li>
+        </ul>
+        <h2>Coordonnées</h2>
+        <metal:field use-macro="python:here.widget('address', mode='view')">
+            Address
+        </metal:field>
+        <h2>Contact(s)</h2>
+        <metal:field use-macro="python:here.widget('contact', mode='view')">
+            Contact
+        </metal:field>
+        
+        <div tal:condition="python:checkPermission('Modify portal content', context)"
+            style="border: 1px dashed black;padding:0 10px 10px;margin-top:20px;">
+        <h3>Contact pour la mise à jour</h3>
+        <metal:field use-macro="python:here.widget('updateContact', mode='view')">
+            Contact
+        </metal:field>
+        </div>
+
+        <div metal:use-macro="here/document_relateditems/macros/relatedItems">
+            show related items if they exist
+        </div>
+    
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+
+    </tal:main-macro>
+</metal:main>
+
+</body>
+</html>

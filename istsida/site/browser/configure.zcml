@@ -1,0 +1,33 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+    <browser:resourceDirectory
+        name="istsida.site"
+        directory="resources"
+        />
+        
+    <browser:page
+        for="*"
+        name="sc-site-view"
+        class=".siteview.SiteView"
+        permission="zope2.View"
+        allowed_interface=".interfaces.ISiteView"
+        />
+            
+    <browser:page
+        for="istsida.site.interfaces.ISCOrganism"
+        name="organism_view"
+        template="organismview.pt"
+        permission="zope2.View"
+        />
+        
+    <browser:page
+        for="Products.ATContentTypes.interface.IATFolder"
+        name="organism_folder_view"
+        template="organismfolderview.pt"
+        class=".organismfolderview.OrganismFolderViewView"
+        permission="zope2.View"
+        />
+            
+</configure>

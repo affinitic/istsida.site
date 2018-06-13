@@ -1,0 +1,177 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+
+<body>
+
+<metal:main fill-slot="main"
+    tal:define="plone_view context/@@plone;
+                site_view context/@@sc-site-view;
+                request_activity request/form/activity|python:'';
+                request_region request/form/region|python:'';
+                request_public request/form/public|python:'';
+                request_type request/form/type|python:'';
+                request_title request/form/title|python:'';
+                organism_activities python:site_view.organism_vocabulary('istsida.vocabularies.activities');
+                organism_regions python:site_view.organism_vocabulary('istsida.vocabularies.regions');
+                organism_publics python:site_view.organism_vocabulary('istsida.vocabularies.publics');
+                organism_points python:site_view.organism_vocabulary('istsida.vocabularies.points');
+                organism_types python:site_view.organism_vocabulary('istsida.vocabularies.types');">
+
+     <h1 tal:content="object_title" class="documentFirstHeading">
+            Title or id
+     </h1>
+    
+     <p class="documentDescription" tal:content="here/Description" tal:condition="here/Description">
+            Description
+     </p>
+     
+     <form tal:attributes="action string:${context/absolute_url}/organism_folder_view" method="get" style="padding:5px 10px 10px;background-color: #EEEEEE;">
+         <fieldset style="padding: 5px;">
+         <legend style="font-size:110%;font-weight:bold;background-color: #EEEEEE;">Sélectionner un sous-ensemble</legend>
+         <div>
+         <strong>Nom :</strong>
+         <input name="title" type="text" tal:attributes="value request_title"/>
+        </div>
+         <div>
+         <strong>Activité :</strong>
+         <select name="activity">
+                <tal:block tal:repeat="item python:[('','TOUTES')] + organism_activities.items()">
+                    <option tal:condition="python:item[0]==request_activity"
+                        selected="selected"
+                        tal:attributes="value python:item[0];"
+                        tal:content="python:item[1]">
+                        Activity
+                    </option>
+                    <option tal:condition="python:item[0]!=request_activity"
+                        tal:attributes="value python:item[0];"
+                        tal:content="python:item[1]">
+                        Activity
+                    </option>
+                </tal:block>
+        </select>
+        </div>
+         <div>
+         <strong>Couverture géographique :</strong>
+         <select name="region">
+                <tal:block tal:repeat="item python:[('','TOUTES')] + organism_regions.items()">
+                    <option tal:condition="python:item[0]==request_region"
+                        selected="selected"
+                        tal:attributes="value python:item[0];"
+                        tal:content="python:item[1]">
+                        Region
+                    </option>
+                    <option tal:condition="python:item[0]!=request_region"
+                        tal:attributes="value python:item[0];"
+                        tal:content="python:item[1]">
+                        Region
+                    </option>
+                </tal:block>
+        </select>
+        </div>
+        <div>
+        <strong>Public cible :</strong>
+         <select name="public">
+                <tal:block tal:repeat="item python:[('','TOUS')] + organism_publics.items()">
+                    <option tal:condition="python:item[0]==request_public"
+                        selected="selected"
+                        tal:attributes="value python:item[0];"
+                        tal:content="python:item[1]">
+                        Public
+                    </option>
+                    <option tal:condition="python:item[0]!=request_public"
+                        tal:attributes="value python:item[0];"
+                        tal:content="python:item[1]">
+                        Public
+                    </option>
+                </tal:block>
+        </select>
+        </div>
+        <div>
+        <strong>Type :</strong>
+         <select name="type">
+                <tal:block tal:repeat="item python:[('','TOUS')] + organism_types.items()">
+                    <option tal:condition="python:item[0]==request_type"
+                        selected="selected"
+                        tal:attributes="value python:item[0];"
+                        tal:content="python:item[1]">
+                        Type
+                    </option>
+                    <option tal:condition="python:item[0]!=request_type"
+                        tal:attributes="value python:item[0];"
+                        tal:content="python:item[1]">
+                        Type
+                    </option>
+                </tal:block>
+        </select>
+        </div>
+        </fieldset>
+        <div><input type="submit" value="OK" id="form_submit" style="cursor:pointer;" /></div>
+     </form>
+     
+     <tal:results tal:define="results
+        python:view.organism_brains(region=request_region,type_=request_type,public=request_public,activity=request_activity,title=request_title);">
+     <tal:if condition="results">
+         <div tal:repeat="brain results">
+             <tal:define define="object brain/getObject;">
+                <h2 style="clear:both;">
+                    <a tal:attributes="href string:${brain/getURL}/view;" target="_blank" >
+                    <span tal:content="brain/Title">Title</span>
+                    </a>
+                </h2>
+        <div style="float:left;padding:0 5px 5px 0;background-color:white;"
+             tal:condition="object/logo_tile|nothing">
+            <a tal:attributes="href string:${brain/getURL}/view;">
+               <img style="height:50;" tal:attributes="src string:${brain/getURL}/logo_tile" alt="logo" />
+            </a>
+        </div>
+
+        <p>
+        <strong>Type :</strong>
+        <tal:type tal:repeat="tp python:object.getTypes()">
+                        <tal:if condition="not:repeat/tp/start">-</tal:if>
+                        <span tal:content="python:organism_types.get(tp,tp)">Type</span>
+        </tal:type><br />
+        <tal:if condition="object/getFocal">
+        <strong>Point focal :</strong>
+        <tal:region tal:repeat="focal python:object.getFocal()">
+                        <tal:if condition="not:repeat/focal/start">-</tal:if>
+                        <span tal:content="python:organism_points.get(focal,focal)">Point</span>
+        </tal:region><br />
+        </tal:if>
+        <strong>Public(s) ciblé(s) : </strong>
+        <tal:public tal:repeat="public python:object.getPublic()">
+                        <tal:if condition="not:repeat/public/start">-</tal:if>
+                        <span tal:content="python:organism_publics.get(public,public)">Public</span>
+        </tal:public><br />
+        <strong>Couverture géographique : </strong>
+        <tal:region tal:repeat="region python:object.getRegion()">
+                        <tal:if condition="not:repeat/region/start">-</tal:if>
+                        <span tal:content="python:organism_regions.get(region,region)">Region</span>
+        </tal:region>
+        </p>
+        
+                <p>
+
+                        <a tal:attributes="href string:${brain/getURL}/view;" style="text-transform:uppercase;" target="_blank">
+                        En&nbsp;savoir&nbsp;plus
+                        </a>
+                </p>
+            </tal:define>
+         </div>
+     </tal:if>
+     <tal:else condition="not:results">
+         <p>
+             Pas d'organisme pour ces critères. 
+         </p>
+     </tal:else>
+     </tal:results>
+    
+</metal:main>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<object name="portal_catalog" meta_type="Plone Catalog Tool">
+  
+  <index name="sc_index_activities" meta_type="KeywordIndex">
+    <indexed_attr value="activity"/>
+  </index>
+  <index name="sc_index_publics" meta_type="KeywordIndex">
+    <indexed_attr value="public"/>
+  </index>
+  <index name="sc_index_regions" meta_type="KeywordIndex">
+    <indexed_attr value="region"/>
+  </index>
+  <index name="sc_index_types" meta_type="KeywordIndex">
+    <indexed_attr value="types"/>
+  </index>
+
+</object>
